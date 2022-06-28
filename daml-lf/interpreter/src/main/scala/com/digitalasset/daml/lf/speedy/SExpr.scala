@@ -114,21 +114,9 @@ object SExpr {
     }
   }
 
-  /** Function application:
-    *    Special case: 'fun' is an atomic expression.
-    */
-  final case class SEAppAtomicFun(fun: SExprAtomic, args: Array[SExpr]) // NICK: remove
-      extends SExpr
-      with SomeArrayEquals {
-    def execute(machine: Machine): Unit = {
-      val vfun = fun.lookupValue(machine)
-      machine.executeApplication(vfun, args)
-    }
-  }
-
   object SEApp {
     def apply(fun: SExpr, args: Array[SExpr]): SExpr = {
-      SEAppGeneral(fun, args)
+      SEAppGeneral(fun, args) //NICK: who needs me?
     }
   }
 

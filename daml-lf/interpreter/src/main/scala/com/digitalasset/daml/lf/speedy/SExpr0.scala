@@ -37,7 +37,7 @@ package speedy
   *
   * - In SExpr{1,}: SELocA, SELocF, SELocS, SEMakeClo, SELet1General,
   *
-  * - In SExpr: SEAppAtomicFun, SEAppAtomicGeneral, SEAppAtomicSaturatedBuiltin,
+  * - In SExpr: SEAppAtomicGeneral, SEAppAtomicSaturatedBuiltin,
   *   SECaseAtomic, SELet1Builtin, SELet1BuiltinArithmetic
   *
   * - In SExpr (runtime only, i.e. rejected by validate): SEDamlException, SEImportValue

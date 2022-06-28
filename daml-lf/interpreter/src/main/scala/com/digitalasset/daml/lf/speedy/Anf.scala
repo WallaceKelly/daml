@@ -299,7 +299,13 @@ private[lf] object Anf {
       case source.SEVal(x) => transform(depth, target.SEVal(x))(k)
 
       case source.SEApp(func, args) =>
-        transformMultiApp(depth, env, func, args, k)(transform)
+        atomizeExps(depth, env, args, k) { (depth, args) => k =>
+          atomizeExp(depth, env, func, k) { (depth, func) => k =>
+            val func1 = makeRelativeA(depth)(func)
+            val args1 = args.map(makeRelativeA(depth))
+            transform(depth, target.SEAppAtomic(func1, args1.toArray))(k)
+          }
+        }
 
       case source.SEMakeClo(fvs0, arity, body) =>
         val fvs = fvs0.map((loc) => makeRelativeL(depth)(makeAbsoluteL(env, loc)))
@@ -410,23 +416,4 @@ private[lf] object Anf {
     }
     loop(body, rhss.reverse)
   }
-
-  /* This function is used when transforming all (multi-arg) function-application. */
-  private[this] def transformMultiApp( // NICK: inline
-      depth: DepthA,
-      env: Env,
-      func: source.SExpr,
-      args: List[source.SExpr],
-      k: K[target.SExpr],
-  )(transform: Tx[target.SExpr]): Res = {
-
-    atomizeExps(depth, env, args, k) { (depth, args) => k =>
-      atomizeExp(depth, env, func, k) { (depth, func) => k =>
-        val func1 = makeRelativeA(depth)(func)
-        val args1 = args.map(makeRelativeA(depth))
-        transform(depth, target.SEAppAtomic(func1, args1.toArray))(k)
-      }
-    }
-  }
-
 }

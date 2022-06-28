@@ -519,10 +519,6 @@ private[lf] object Pretty {
           val prefix = prettySExpr(index)(fun) + text("@E(")
           intercalate(comma + lineOrSpace, args.map(prettySExpr(index)))
             .tightBracketBy(prefix, char(')'))
-        case SEAppAtomicFun(fun, args) =>
-          val prefix = prettySExpr(index)(fun) + text("@N(")
-          intercalate(comma + lineOrSpace, args.map(prettySExpr(index)))
-            .tightBracketBy(prefix, char(')'))
         case SEAppAtomicGeneral(fun, args) =>
           val prefix = prettySExpr(index)(fun) + text("@A(")
           intercalate(comma + lineOrSpace, args.map(prettySExpr(index)))

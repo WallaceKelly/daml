@@ -1046,7 +1046,7 @@ private[lf] object Speedy {
   }
 
   /** The function has been evaluated to a value. Now restore the environment and execute the application */
-  private[speedy] final case class KArg(
+  private[speedy] final case class KArg( //NICK: who needs me?
       machine: Machine,
       newArgs: Array[SExpr],
   ) extends Kont
