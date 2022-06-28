@@ -116,7 +116,7 @@ object SExpr {
 
   object SEApp {
     def apply(fun: SExpr, args: Array[SExpr]): SExpr = {
-      SEAppGeneral(fun, args) //NICK: who needs me?
+      SEAppGeneral(fun, args) // NICK: who needs me?
     }
   }
 
