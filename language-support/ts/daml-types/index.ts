@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import * as jtv from "@mojotech/json-type-validation";
 import _ from "lodash";
+import * as com_daml_ledger_api_v1_value_pb from '@daml/ledger-api/com/daml/ledger/api/v1/value_pb';
 
 /**
  * Interface for companion objects of serializable types. Its main purpose is
@@ -18,6 +19,8 @@ export interface Serializable<T> {
    * @internal Encodes T in expected shape for JSON API.
    */
   encode: (t: T) => unknown;
+
+  decodeProto: (v: com_daml_ledger_api_v1_value_pb.Value) => T;
 }
 
 /**
@@ -189,6 +192,12 @@ export interface Unit {
 export const Unit: Serializable<Unit> = {
   decoder: jtv.object({}),
   encode: (t: Unit) => t,
+  decodeProto: (v: com_daml_ledger_api_v1_value_pb.Value): Unit => {
+    if (v.getSumCase() !== com_daml_ledger_api_v1_value_pb.Value.SumCase.UNIT) {
+      throw new Error(`Expected unit but got ${v}`)
+    }
+    return {};
+  },
 };
 
 /**
@@ -202,6 +211,12 @@ export type Bool = boolean;
 export const Bool: Serializable<Bool> = {
   decoder: jtv.boolean(),
   encode: (b: Bool) => b,
+  decodeProto: (v: com_daml_ledger_api_v1_value_pb.Value): Bool => {
+    if (v.getSumCase() !== com_daml_ledger_api_v1_value_pb.Value.SumCase.BOOL) {
+      throw new Error(`Expected bool but got ${v}`)
+    }
+    return v.getBool();
+  },
 };
 
 /**
@@ -217,6 +232,12 @@ export type Int = string;
 export const Int: Serializable<Int> = {
   decoder: jtv.string(),
   encode: (i: Int) => i,
+  decodeProto: (v: com_daml_ledger_api_v1_value_pb.Value): Int => {
+    if (v.getSumCase() !== com_daml_ledger_api_v1_value_pb.Value.SumCase.INT64) {
+      throw new Error(`Expected int but got ${v}`)
+    }
+    return v.getInt64();
+  },
 };
 
 /**
@@ -242,6 +263,12 @@ export type Decimal = Numeric;
 export const Numeric = (_: number): Serializable<Numeric> => ({
   decoder: jtv.string(),
   encode: (n: Numeric): unknown => n,
+  decodeProto: (v: com_daml_ledger_api_v1_value_pb.Value): Numeric => {
+    if (v.getSumCase() !== com_daml_ledger_api_v1_value_pb.Value.SumCase.NUMERIC) {
+      throw new Error(`Expected numeric but got ${v}`)
+    }
+    return v.getNumeric();
+  },
 });
 
 /**
@@ -260,6 +287,12 @@ export type Text = string;
 export const Text: Serializable<Text> = {
   decoder: jtv.string(),
   encode: (t: Text) => t,
+  decodeProto: (v: com_daml_ledger_api_v1_value_pb.Value): Text => {
+    if (v.getSumCase() !== com_daml_ledger_api_v1_value_pb.Value.SumCase.TEXT) {
+      throw new Error(`Expected text but got ${v}`)
+    }
+    return v.getText();
+  },
 };
 
 /**
@@ -275,6 +308,12 @@ export type Time = string;
 export const Time: Serializable<Time> = {
   decoder: jtv.string(),
   encode: (t: Time) => t,
+  decodeProto: (v: com_daml_ledger_api_v1_value_pb.Value): Time => {
+    if (v.getSumCase() !== com_daml_ledger_api_v1_value_pb.Value.SumCase.TIMESTAMP) {
+      throw new Error(`Expected time but got ${v}`)
+    }
+    return v.getTimestamp();
+  },
 };
 
 /**
@@ -290,6 +329,12 @@ export type Party = string;
 export const Party: Serializable<Party> = {
   decoder: jtv.string(),
   encode: (p: Party) => p,
+  decodeProto: (v: com_daml_ledger_api_v1_value_pb.Value): Party => {
+    if (v.getSumCase() !== com_daml_ledger_api_v1_value_pb.Value.SumCase.PARTY) {
+      throw new Error(`Expected party but got ${v}`)
+    }
+    return v.getParty();
+  },
 };
 
 /**
@@ -307,6 +352,12 @@ export type List<T> = T[];
 export const List = <T>(t: Serializable<T>): Serializable<T[]> => ({
   decoder: jtv.array(t.decoder),
   encode: (l: List<T>): unknown => l.map((element: T) => t.encode(element)),
+  decodeProto: (v: com_daml_ledger_api_v1_value_pb.Value): T[] => {
+    if (v.getSumCase() !== com_daml_ledger_api_v1_value_pb.Value.SumCase.LIST) {
+      throw new Error(`Expected list but got ${v}`)
+    }
+    return v.getList()!.getElementsList().map(e => t.decodeProto(e))
+  },
 });
 
 /**
@@ -322,6 +373,9 @@ export type Date = string;
 export const Date: Serializable<Date> = {
   decoder: jtv.string(),
   encode: (d: Date) => d,
+  decodeProto: (_v: com_daml_ledger_api_v1_value_pb.Value): Date => {
+    throw new Error("Date decoding not implemented");
+  },
 };
 
 /**
@@ -352,6 +406,12 @@ export const ContractId = <T>(
 ): Serializable<ContractId<T>> => ({
   decoder: jtv.string() as jtv.Decoder<ContractId<T>>,
   encode: (c: ContractId<T>): unknown => c,
+  decodeProto: (v: com_daml_ledger_api_v1_value_pb.Value): ContractId<T> => {
+    if (v.getSumCase() !== com_daml_ledger_api_v1_value_pb.Value.SumCase.CONTRACT_ID) {
+      throw new Error(`Expected time but got ${v}`)
+    }
+    return v.getContractId() as ContractId<T>;
+  },
 });
 
 /**
@@ -377,6 +437,9 @@ class OptionalWorker<T> implements Serializable<Optional<T>> {
   decoder: jtv.Decoder<Optional<T>>;
   private innerDecoder: jtv.Decoder<OptionalInner<T>>;
   encode: (o: Optional<T>) => unknown;
+  decodeProto(_v: com_daml_ledger_api_v1_value_pb.Value): Optional<T> {
+    throw new Error("Decoding of optional not implememented");
+  };
 
   constructor(payload: Serializable<T>) {
     if (payload instanceof OptionalWorker) {
@@ -452,6 +515,9 @@ export const TextMap = <T>(t: Serializable<T>): Serializable<TextMap<T>> => ({
       out[k] = t.encode(tm[k]);
     });
     return out;
+  },
+  decodeProto: (_v: com_daml_ledger_api_v1_value_pb.Value): TextMap<T> => {
+    throw new Error("Decoding of textmap not implememented");
   },
 });
 
@@ -565,4 +631,7 @@ export const Map = <K, V>(
     .map(kvs => new MapImpl(kvs)),
   encode: (m: Map<K, V>): unknown =>
     m.entriesArray().map(e => [kd.encode(e[0]), vd.encode(e[1])]),
+    decodeProto: (_v: com_daml_ledger_api_v1_value_pb.Value): Map<K, V> => {
+      throw new Error("Decoding of map not implememented");
+    },
 });
