@@ -1,7 +1,8 @@
 // Copyright (c) 2022 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-package com.daml.lf.engine.script.ledgerinteraction
+package com.daml.lf.engine.script
+package ledgerinteraction
 
 import java.util.UUID
 
@@ -43,6 +44,9 @@ import scalaz.syntax.foldable._
 import scalaz.syntax.tag._
 
 import scala.concurrent.{ExecutionContext, Future}
+
+import com.daml.lf.data.ImmArray //NICK
+
 
 class GrpcLedgerClient(val grpcClient: LedgerClient, val applicationId: ApplicationId)
     extends ScriptLedgerClient {
@@ -114,6 +118,22 @@ class GrpcLedgerClient(val grpcClient: LedgerClient, val applicationId: Applicat
     } yield {
       activeContracts.find(c => c.contractId == cid)
     }
+  }
+
+  override def queryInterfaceId(
+      parties: OneAnd[Set, Ref.Party],
+      templateId: Identifier,
+      cid: ContractId,
+  )(implicit
+      ec: ExecutionContext,
+      mat: Materializer,
+  ): Future[Option[Value]] = {
+    // mylog(s"GrpcLedgerClient, queryInterfaceId ($templateId, $cid) --> None")
+    // Future.successful(None) // NICK
+    mylog(s"GrpcLedgerClient, queryInterfaceId ($templateId, $cid) --> Some(?)")
+    def v: Value = Value.ValueText("hacky-mc-hackface")
+    def v2: Value = Value.ValueRecord(None,ImmArray((None,v)))
+    Future.successful(Some(v2))
   }
 
   // TODO (MK) https://github.com/digital-asset/daml/issues/11737

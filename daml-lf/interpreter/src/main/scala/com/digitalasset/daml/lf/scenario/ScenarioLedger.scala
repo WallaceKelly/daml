@@ -590,6 +590,7 @@ case class ScenarioLedger(
       view: View,
       effectiveAt: Time.Timestamp,
   ): Seq[LookupOk] = {
+    // mylog(s"ScenarioLedger.view") //NICK
     ledgerData.activeContracts.toList
       .map(cid => lookupGlobalContract(view, effectiveAt, cid))
       .collect { case l @ LookupOk(_, _, _) =>
@@ -605,6 +606,13 @@ case class ScenarioLedger(
       effectiveAt: Time.Timestamp,
       coid: ContractId,
   ): LookupResult = {
+    // mylog(s"ScenarioLedger.lookupGlobalContract") //NICK
+    /*NICK...
+      coidToNodeId: Map[ContractId, EventId]
+      nodeInfos: LedgerNodeInfos
+  type LedgerNodeInfos = Map[EventId, LedgerNodeInfo]
+  final case class LedgerNodeInfo(node: Node, ... )
+     */
     ledgerData.coidToNodeId.get(coid).flatMap(ledgerData.nodeInfos.get) match {
       case None => LookupContractNotFound(coid)
       case Some(info) =>

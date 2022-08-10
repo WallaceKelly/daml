@@ -113,6 +113,18 @@ class IdeLedgerClient(
     }
   }
 
+  override def queryInterfaceId(
+      parties: OneAnd[Set, Ref.Party],
+      templateId: Identifier,
+      cid: ContractId,
+  )(implicit
+      ec: ExecutionContext,
+      mat: Materializer,
+  ): Future[Option[Value]] = {
+    mylog(s"IdeLedgerClient, queryInterfaceId ($templateId, $cid) --> None")
+    Future.successful(None) // NICK
+  }
+
   override def queryContractKey(
       parties: OneAnd[Set, Ref.Party],
       templateId: Identifier,

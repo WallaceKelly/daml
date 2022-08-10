@@ -1,7 +1,8 @@
 // Copyright (c) 2022 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-package com.daml.lf.engine.script.ledgerinteraction
+package com.daml.lf.engine.script
+package ledgerinteraction
 
 import java.time.Instant
 
@@ -208,6 +209,14 @@ class JsonLedgerClient(
         ScriptLedgerClient.ActiveContract(templateId, cid, payload)
       })
     }
+  }
+  override def queryInterfaceId(
+      parties: OneAnd[Set, Ref.Party],
+      templateId: Identifier,
+      cid: ContractId,
+  )(implicit ec: ExecutionContext, mat: Materializer): Future[Option[Value]] = {
+    mylog(s"JsonLedgerClient, queryInterfaceId ($templateId, $cid) ...")
+    ??? // NICK
   }
   override def queryContractKey(
       parties: OneAnd[Set, Ref.Party],

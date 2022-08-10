@@ -84,3 +84,45 @@ test = script do
   asset2 === Asset with {issuer = p, owner = p, amount = 10}
   asset3 === Asset with {issuer = p, owner = p, amount = 5}
   pure ()
+
+
+----------------------------------------------------------------------
+-- NICK
+
+interface MyI where
+  viewtype MyView
+
+data MyView = MyView { info : Int }
+
+template MyT
+  with
+    p : Party
+    v : Int
+  where
+    signatory p
+
+    interface instance MyI for MyT where
+      view = MyView { info = v }
+
+
+test_NICK : Script ()
+test_NICK = do
+  p <- allocateParty "p"
+  cid <- submit p do createCmd (MyT p 42)
+
+  --submit p do archiveCmd cid
+
+  optR <- queryContractId p cid
+  let (Some r) = optR
+  r === MyT p 42
+
+  let iid : ContractId MyI = toInterfaceContractId @MyI cid
+  optI <- queryInterfaceId p iid
+
+  let _ : Optional MyView = optI
+
+--  let None = optI
+--  let (Some i) = optI
+--  let _ : MyI = i
+
+  pure ()

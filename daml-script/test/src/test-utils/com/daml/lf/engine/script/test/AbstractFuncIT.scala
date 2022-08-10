@@ -428,5 +428,19 @@ abstract class AbstractFuncIT
           )
       } yield r shouldBe SUnit
     }
+
+    "new interface stuff NICK" in {
+      for {
+        clients <- participantClients()
+        v <- run(
+          clients,
+          QualifiedName.assertFromString("TestInterfaces:test_NICK"),
+          dar = devDar,
+        )
+      } yield {
+        assert(v == SUnit)
+      }
+    }
+
   }
 }
