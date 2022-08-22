@@ -77,7 +77,6 @@ class ParallelIndexerSubscriptionSpec extends AnyFlatSpec with Matchers {
     create_observers = None,
     create_agreement_text = None,
     create_key_value = None,
-    create_key_hash = None,
     create_argument_compression = None,
     create_key_value_compression = None,
     event_sequential_id = 0,

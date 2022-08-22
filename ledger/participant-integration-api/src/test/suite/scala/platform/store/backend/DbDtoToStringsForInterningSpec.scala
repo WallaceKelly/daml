@@ -103,7 +103,6 @@ class DbDtoToStringsForInterningSpec extends AnyFlatSpec with Matchers {
       create_observers = Some(Set("35", "36", "37")),
       create_agreement_text = Some("38"),
       create_key_value = None,
-      create_key_hash = Some("39"),
       create_argument_compression = Some(1),
       create_key_value_compression = Some(1),
       event_sequential_id = 1,

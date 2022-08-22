@@ -85,6 +85,8 @@ final class LfValueTranslation(
     ) => Future[Option[com.daml.daml_lf_dev.DamlLf.Archive]],
 ) extends LfValueSerialization {
 
+  import LfValueTranslation._
+
   private val enricherO = engineO.map(new ValueEnricher(_))
 
   private[this] val packageLoader = new DeduplicatingPackageLoader()
@@ -259,9 +261,6 @@ final class LfValueTranslation(
   private def eventKey(s: String) =
     LfValueTranslationCache.EventCache.Key(EventId.assertFromString(s))
 
-  private def decompressAndDeserialize(algorithm: Compression.Algorithm, value: Array[Byte]) =
-    ValueSerializer.deserializeValue(algorithm.decompress(new ByteArrayInputStream(value)))
-
   def enricher: ValueEnricher = {
     // Note: LfValueTranslation is used by JdbcLedgerDao for both serialization and deserialization.
     // Sometimes the JdbcLedgerDao is used in a way that it never needs to deserialize data in verbose mode
@@ -377,4 +376,10 @@ final class LfValueTranslation(
       )
     }
   }
+}
+
+object LfValueTranslation {
+  def decompressAndDeserialize(algorithm: Compression.Algorithm, value: Array[Byte]) =
+    ValueSerializer.deserializeValue(algorithm.decompress(new ByteArrayInputStream(value)))
+
 }

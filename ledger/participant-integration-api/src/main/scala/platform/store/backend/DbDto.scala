@@ -45,7 +45,6 @@ object DbDto {
       create_observers: Option[Set[String]],
       create_agreement_text: Option[String],
       create_key_value: Option[Array[Byte]],
-      create_key_hash: Option[String],
       create_argument_compression: Option[Int],
       create_key_value_compression: Option[Int],
       event_sequential_id: Long,
@@ -154,5 +153,15 @@ object DbDto {
       action_count: Int,
       metering_timestamp: Long,
       ledger_offset: String,
+  ) extends DbDto
+
+  final case class ContractKey(
+      contract_key_hash: Long,
+      create_event_sequential_id: Long,
+      contract_id: String,
+  ) extends DbDto
+
+  final case class RemovedContractKey(
+      contract_id: String
   ) extends DbDto
 }
