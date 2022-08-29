@@ -31,6 +31,7 @@ object MeteringReportKey {
     */
   def readSystemResourceAsKey(keyUrl: URL): Key = {
     val json = new String(keyUrl.openStream().readAllBytes(), StandardCharsets.UTF_8)
+    //val json = "{\n  \"scheme\": \"community-2022\",\n  \"algorithm\": \"HmacSHA256\",\n  \"encoded\": \"iENTFX4g-fAvOBTXnGjIVfesNzmWFKpo_35zpUnXEsg=\"\n}"
     json.parseJson.convertTo[Key]
   }
 

@@ -70,6 +70,7 @@ final class ProgramResource[Context: HasExecutionContext, T](
             )
           case NonFatal(_) =>
             logger.error("Shutting down because of an initialization error.", exception)
+          case _ => // don't do anything match on fatal error
         }
         sys.exit(1) // `stop` will be triggered by the shutdown hook.
       }(ExecutionContext.global) // Run on the global execution context to avoid deadlock.
