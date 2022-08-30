@@ -47,7 +47,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import com.daml.lf.data.ImmArray //NICK
 
-
 class GrpcLedgerClient(val grpcClient: LedgerClient, val applicationId: ApplicationId)
     extends ScriptLedgerClient {
   override val transport = "gRPC API"
@@ -132,7 +131,7 @@ class GrpcLedgerClient(val grpcClient: LedgerClient, val applicationId: Applicat
     // Future.successful(None) // NICK
     mylog(s"GrpcLedgerClient, queryInterfaceId ($templateId, $cid) --> Some(?)")
     def v: Value = Value.ValueText("hacky-mc-hackface")
-    def v2: Value = Value.ValueRecord(None,ImmArray((None,v)))
+    def v2: Value = Value.ValueRecord(None, ImmArray((None, v)))
     Future.successful(Some(v2))
   }
 
