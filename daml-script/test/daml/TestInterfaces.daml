@@ -117,9 +117,9 @@ test_NICK = do
   r === MyT p 42
 
   let iid : ContractId MyI = toInterfaceContractId @MyI cid
-  optI <- queryInterfaceId p iid
+  --optI <- queryInterfaceId p iid
 
-  let _ : Optional MyView = optI
+  --let _ : Optional MyView = optI
 
 --  let None = optI
 --  let (Some i) = optI
