@@ -666,12 +666,23 @@ private[lf] final class Compiler(
       translateExp(env.bindExprVar(tmpl.param, tmplArgPos), tmpl.signatories)
     }
 
-  private[this] def compileObservers(
+  private[this] def compileContractKeyWithMaintainter(
       tmplId: Identifier,
-      tmpl: Template,
+      tmplParam: VarName,
+      key: TemplateKey,
   ): (t.SDefinitionRef, SDefinition) =
-    topLevelFunction1(t.ObserversDefRef(tmplId)) { (tmplArgPos, env) =>
-      translateExp(env.bindExprVar(tmpl.param, tmplArgPos), tmpl.observers)
+    topLevelFunction1(t.ContractKeyDefRef(tmplId)) { (tmplArgPos, env) =>
+      let(env, translateExp(env.bindExprVar(tmplOaram, tmplArgPos), key.body)) { (keyPos, env) =>
+        SBSome(translateKeyWithMaintainers(env, keyPos, key))
+      }
+    }
+
+  private[this] def compileContractKey(
+      tmplId: Identifier,
+      key: TemplateKey,
+  ): (t.SDefinitionRef, SDefinition) =
+    topLevelFunction1(t.ContractKeyDefRef(tmplId)) { (tmplArgPos, env) =>
+      translateExp(env.bindExprVar(tmpl.param, tmplArgPos), key.body)
     }
 
   private[this] def compileToCachedContract(
@@ -693,10 +704,7 @@ private[lf] final class Compiler(
               List(
                 s.SCaseAlt(
                   t.SCPNone,
-                  let(env, translateExp(env.bindExprVar(tmpl.param, tmplArgPos), tmplKey.body)) {
-                    (keyPos, env) =>
-                      SBSome(translateKeyWithMaintainers(env, keyPos, tmplKey))
-                  },
+                  SBSome(t.ContractKeyDefRef(tmplId)(tmplArgPos)),
                 ),
                 s.SCaseAlt(t.SCPDefault, env.toSEVar(mbKeyPos)),
               ),

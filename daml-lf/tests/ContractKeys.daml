@@ -83,7 +83,10 @@ lookupTest = scenario do
   divulgee <- getParty "d" -- Divulgee
   blind <- getParty "b" -- Blind
 
-  keyedCid <- submit sig do create Keyed with ..
+  keyed <- pure Keyed with ..
+  keyedCid <- submit sig do create keyed
+  -- _ <- key keyed 
+  
   divulgercid <- submit divulgee do create Divulger with ..
   submit sig do exercise divulgercid DivulgeKeyed with ..
 

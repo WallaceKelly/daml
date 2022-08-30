@@ -10,7 +10,7 @@ import com.daml.lf.data.{FrontStack, ImmArray, Ref, Time}
 import com.daml.lf.interpretation.{Error => IError}
 import com.daml.lf.language.Ast._
 import com.daml.lf.language.{LookupError, PackageInterface, Util => AstUtil}
-import com.daml.lf.speedy.Compiler.{CompilationError, PackageNotFound}
+import com.daml.lf.speedy.Compiler.{CompilationError, PackageNotFound, compilePackages}
 import com.daml.lf.speedy.SError._
 import com.daml.lf.speedy.SExpr._
 import com.daml.lf.speedy.SResult._
@@ -64,6 +64,33 @@ private[lf] object Speedy {
         maxDepthKont = 0,
         maxDepthEnv = 0,
       )
+    }
+  }
+
+  def computeKey(
+      compiledPackages: CompiledPackages,
+      tmplId: Ref.TypeConName,
+      tmplPayload: SValue.SRecord,
+  ): SValue = {
+    compiledPackages.pkgInterface.lookupTemplateKey(tmplId) match {
+      case Left(error) =>
+        sys.error(error)
+      case Right(_) =>
+
+    }
+    Machine
+      .fromPureExpr(compiledPackages, SExpr.ContractKeyDefRef(tmplId)(SExpr.SEValue(tmplPayload)))
+      .run() match {
+      case SResultFinal(v, None) =>
+        v
+      case SResultError(err) => ???
+      case SResultNeedTime(callback) => ???
+      case SResultNeedContract(contractId, committers, callback) => ???
+      case SResultNeedPackage(pkg, context, callback) => ???
+      case SResultScenarioSubmit(committers, commands, location, mustFail, callback) => ???
+      case SResultScenarioPassTime(relTime, callback) => ???
+      case SResultScenarioGetParty(partyText, callback) => ???
+      case SResultNeedKey(key, committers, callback) => ???
     }
   }
 
