@@ -53,5 +53,6 @@ object PartyRecordStore {
   final case class PartyRecordNotFound(party: Ref.Party) extends Error
   final case class PartyRecordExists(party: Ref.Party) extends Error
   final case class ConcurrentPartyUpdate(party: Ref.Party) extends Error
+  final case class MaxAnnotationsSizeExceeded(party: Ref.Party) extends Error
 
 }
